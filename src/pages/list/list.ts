@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController, ActionSheetController } from 'ionic-angular';
+import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 
 @Component({
   selector: 'page-list',
@@ -8,30 +9,103 @@ import { NavController, NavParams } from 'ionic-angular';
 export class ListPage {
   selectedItem: any;
   icons: string[];
-  items: Array<{title: string, note: string, icon: string}>;
+  items: FirebaseListObservable<any>;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, public actionSheetCtrl: ActionSheetController, db: AngularFireDatabase) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
-
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-    'american-football', 'boat', 'bluetooth', 'build'];
-
-    this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
+    this.items = db.list('/items');
   }
 
-  itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push(ListPage, {
-      item: item
+  addTodo() {
+    let prompt = this.alertCtrl.create({
+      title: 'Todo Name',
+      message: "Enter a name for this new todo you're so keen on adding",
+      inputs: [
+        {
+          name: 'title',
+          placeholder: 'Title'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            // console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            this.items.push({
+              title: data.title
+            });
+          }
+        }
+      ]
     });
+    prompt.present();
+  }
+
+  showOptions(itemId, itemTitle) {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'What do you want to do?',
+      buttons: [
+        {
+          text: 'Delete Todo',
+          role: 'destructive',
+          handler: () => {
+            this.removeTodo(itemId);
+          }
+        }, {
+          text: 'Update Todo',
+          handler: () => {
+            this.updateTodo(itemId, itemTitle);
+          }
+        }, {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            // console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
+  }
+
+  removeTodo(itemId: string) {
+    this.items.remove(itemId);
+  }
+
+  updateTodo(itemId, itemTitle) {
+    let prompt = this.alertCtrl.create({
+      title: 'Todo Name',
+      message: "Update the name for this todo",
+      inputs: [
+        {
+          name: 'title',
+          placeholder: 'Title',
+          value: itemTitle
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            // console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            this.items.update(itemId, {
+              title: data.title
+            });
+          }
+        }
+      ]
+    });
+    prompt.present();
   }
 }
