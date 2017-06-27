@@ -16,12 +16,12 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 
 // AF2 Settings
 export const firebaseConfig = {
-  apiKey: "AIzaSyBxLNCdLsQ8qY5izgbaGpNWTEB6IhMVyZ8",
-  authDomain: "memotodo-5d6ad.firebaseapp.com",
-  databaseURL: "https://memotodo-5d6ad.firebaseio.com",
-  projectId: "memotodo-5d6ad",
-  storageBucket: "memotodo-5d6ad.appspot.com",
-  messagingSenderId: "577621799050"
+  apiKey: "AIzaSyBqeXTGyzE9yPG7g0TmWiWuNcR2ubuSNn0",
+  authDomain: "memo-fd1e4.firebaseapp.com",
+  databaseURL: "https://memo-fd1e4.firebaseio.com",
+  projectId: "memo-fd1e4",
+  storageBucket: "memo-fd1e4.appspot.com",
+  messagingSenderId: "121538602649"
 };
 
 @NgModule({
